@@ -3,9 +3,6 @@
   "version": "2.3.1",
   "description": "Configuration and scripts for Create React App.",
   "repository": "wmonk/create-react-app",
-    "type": "git",
-    "url": "https://github.com/kitze/create-react-app/"
-  },
   "license": "BSD-3-Clause",
   "engines": {
     "node": ">=6"
