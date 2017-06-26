@@ -20,6 +20,7 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const paths = require('./paths');
+const getCustomConfig = require('./get-custom-config');
 const getClientEnvironment = require('./env');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
@@ -34,6 +35,8 @@ const shouldUseRelativeAssetPaths = publicPath === './';
 const publicUrl = publicPath.slice(0, -1);
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
+//Get custom configuration for injecting plugins, presets and loaders
+var customConfig = getCustomConfig(true);
 
 // Assert this just to be safe.
 // Development builds of React are slow and not intended for production.
@@ -155,7 +158,7 @@ module.exports = {
           /\.gif$/,
           /\.jpe?g$/,
           /\.png$/,
-        ],
+        ].concat(customConfig.excludedFilesRegex),
         loader: require.resolve('file-loader'),
         options: {
           name: 'static/media/[name].[hash:8].[ext]',
@@ -191,7 +194,7 @@ module.exports = {
       // in the main CSS file.
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract(
+        loader: ExtractTextPlugin.extract.apply(null, customConfig.values.CSS_MODULES ? ['style', 'css?modules&importLoaders=1', 'postcss'] : ['style', 'css?importLoaders=1', 'postcss'])
           Object.assign(
             {
               fallback: require.resolve('style-loader'),
@@ -202,6 +205,7 @@ module.exports = {
                     importLoaders: 1,
                     minimize: true,
                     sourceMap: true,
+
                   },
                 },
                 {
@@ -231,7 +235,7 @@ module.exports = {
       },
       // ** STOP ** Are you adding a new loader?
       // Remember to add the new extension(s) to the "file" loader exclusion list.
-    ],
+    ].concat(customConfig.loaders)
   },
   plugins: [
     // Makes some environment variables available in index.html.
@@ -286,6 +290,7 @@ module.exports = {
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
     }),
+  ].concat(customConfig.plugins),
     // Generate a service worker script that will precache, and keep up to date,
     // the HTML & assets that are part of the Webpack build.
     new SWPrecacheWebpackPlugin({
@@ -320,7 +325,6 @@ module.exports = {
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-  ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
   node: {
