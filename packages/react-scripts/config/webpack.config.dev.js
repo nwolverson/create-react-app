@@ -19,6 +19,7 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCustomConfig = require('./get-custom-config');
+const getClientEnvironment = require('./env');
 const paths = require('./paths');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
@@ -165,7 +166,7 @@ module.exports = {
           /\.bmp$/,
           /\.gif$/,
           /\.jpe?g$/,
-          /\.png$/
+          /\.png$/,
         ].concat(customConfig.excludedFilesRegex),
         loader: require.resolve('file-loader'),
         options: {
@@ -226,7 +227,7 @@ module.exports = {
       },
       // ** STOP ** Are you adding a new loader?
       // Remember to add the new extension(s) to the "url" loader exclusion list.
-    ],
+    ].concat(customConfig.rules),
   },
   plugins: [
     // Makes some environment variables available in index.html.
@@ -253,13 +254,13 @@ module.exports = {
     // makes the discovery automatic so you don't have to restart.
     // See https://github.com/facebookincubator/create-react-app/issues/186
     new WatchMissingNodeModulesPlugin(paths.appNodeModules),
-  ].concat(customConfig.plugins),
     // Moment.js is an extremely popular library that bundles large locale files
     // by default due to how Webpack interprets its code. This is a practical
     // solution that requires the user to opt into importing specific locales.
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+  ].concat(customConfig.plugins),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
   node: {

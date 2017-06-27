@@ -10,7 +10,7 @@ function getCustomConfig(prod) {
       if (customizer.prod === false && prod === true) {
         return finalConfig;
       }
-
+      
       var envValue = process.env['REACT_APP_' + customizerKey];
       if (env && envValue && envValue !== 'false') {
         if (customizer.toArray) {
@@ -28,10 +28,10 @@ function getCustomConfig(prod) {
       babelPlugins: [],
       plugins: [],
       loaders: [],
+      rules: [],
       values: {},
       excludedFilesRegex: []
     });
-
   return result;
 }
 
